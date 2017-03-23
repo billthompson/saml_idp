@@ -18,6 +18,12 @@ module SamlIdp
     yield config
   end
 
+  def self.tagged_logger(level, message)
+    config.logger.tagged('saml', 'saml_idp') do
+      config.logger.public_send(level, message)
+    end
+  end
+
   def self.metadata
     @metadata ||= MetadataBuilder.new(config)
   end

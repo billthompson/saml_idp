@@ -21,7 +21,15 @@ module SamlIdp
     end
 
     def sign(el)
-      el << signature if sign?
+      if sign?
+        SamlIdp.tagged_logger(:info, "Adding signature to el in #{self.class.name}.")
+        el << signature
+        SamlIdp.tagged_logger(:info, "Signature successfully added to el in #{self.class.name}.")
+      else
+        SamlIdp.tagged_logger(:info, "Signing el but is NOOP in #{self.class.name}.")
+      end
+    rescue => e
+      SamlIdp.tagged_logger(:error, "#{e.class.name}: #{e.message}. Error signing el in #{self.class.name}.")
     end
 
     def generated_reference_id

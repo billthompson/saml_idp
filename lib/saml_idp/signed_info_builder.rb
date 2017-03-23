@@ -77,6 +77,18 @@ module SamlIdp
     def encoded
       key = OpenSSL::PKey::RSA.new(secret_key, password)
       Base64.strict_encode64(key.sign(algorithm.new, raw))
+    rescue => e
+      SamlIdp.tagged_logger(:error, "#{e.class.name}: #{e.message}. Unable to create signature.\n\n--Backtrace:\n#{e.backtrace[0..10].join("\n")}")
+
+      begin
+        if key = OpenSSL::PKey::RSA.new(secret_key)
+          SamlIdp.tagged_logger(:info, "Able to successfully create RSA when omitting password. Password configured?: #{password.to_s.empty?}")
+        end
+      rescue => e2
+        SamlIdp.tagged_logger(:error, "#{e2.class.name}: #{e2.message}. Unable to create signature even when omitting password.\n\n--Backtrace:\n#{e2.backtrace[0..10].join("\n")}")
+      end
+
+      raise e
     end
     private :encoded
 

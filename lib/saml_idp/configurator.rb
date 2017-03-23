@@ -16,6 +16,7 @@ module SamlIdp
     attr_accessor :single_logout_service_post_location
     attr_accessor :attributes
     attr_accessor :service_provider
+    attr_accessor :logger
 
     def initialize
       self.x509_certificate = Default::X509_CERTIFICATE
@@ -27,6 +28,7 @@ module SamlIdp
       self.service_provider.metadata_persister = ->(id, settings) {  }
       self.service_provider.persisted_metadata_getter = ->(id, service_provider) {  }
       self.attributes = {}
+      self.logger = Rails.logger if Rails.try(:logger)
     end
 
     # formats
